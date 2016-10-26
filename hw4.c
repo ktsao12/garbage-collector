@@ -128,7 +128,7 @@ int markBitSet(size_t *b) {
 	size_t *header = b + 1;
 	size_t mark = *header;
 	size_t marked = mark & 4;
-	return marked && 1;
+	return (marked && 1);
 }
 
 void setMarkBit(size_t *b) {
@@ -205,7 +205,7 @@ void sweep() {
 			resetMarkBit(ptr);
 		}
 		else if (blockAllocated(ptr)) {
-			temp = (size_t *) ptr + 2;
+			temp = (size_t *)(ptr + 2);
 			if (nextBlock(nextBlock(ptr)) >= end) {
 				free(temp);
 				heap_mem.end = sbrk(0);
