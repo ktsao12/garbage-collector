@@ -101,124 +101,124 @@ void build_heap_index() {
 
 // the actual collection code
 size_t block_size (size_t *b) {
-	size_t *chunk = b;
-	size_t *header = chunk + 1;
-	return (*header & (~7));
+    size_t *chunk = b;
+    size_t *header = chunk + 1;
+    return (*header & (~7));
 }
 
 size_t *nextBlock(size_t *b) {
-	size_t size = block_size(b);
-	return (size_t *)((char *)b + size);
+    size_t size = block_size(b);
+    return (size_t *)((char *)b + size);
 }
 
 int blockAllocated(size_t *b) {
-	size_t *next = nextBlock(b);
-	if (nextBlock(b) == heap_mem.end) {
-		return 1;
-	}
+    size_t *next = nextBlock(b);
+    if (nextBlock(b) == heap_mem.end) {
+	return 1;
+    }
 
-	size_t *temp = next + 1;
-	if ((*temp & 0x01) == 1) {
-		return 1;
-	}
-	return 0;
+    size_t *temp = next + 1;
+    if ((*temp & 0x01) == 1) {
+	return 1;
+    }
+    return 0;
 }
 
 int markBitSet(size_t *b) {
-	size_t *header = b + 1;
-	size_t mark = *header;
-	size_t marked = mark & 4;
-	return (marked && 1);
+    size_t *header = b + 1;
+    size_t mark = *header;
+    size_t marked = mark & 4;
+    return (marked && 1);
 }
 
 void setMarkBit(size_t *b) {
-	size_t *ptr = b + 1;
-	*(ptr) = *(ptr) | 4;
+    size_t *ptr = b + 1;
+    *(ptr) = *(ptr) | 4;
 }
 
 void resetMarkBit(size_t *b) {
-	size_t *ptr = b + 1;
-	*ptr = *(ptr) & (~4);
+    size_t *ptr = b + 1;
+    *(ptr) = *(ptr) & (~4);
 }
 
 //determine if what "looks" like a pointer actually points to a block in the heap
-size_t * is_pointer(size_t * ptr) {
-	if (ptr == (size_t *)0x0){
-		return NULL;
-	}
-	
-	size_t *start = heap_mem.start - 2;
-
-	if ((ptr < heap_mem.start) || (ptr > heap_mem.end)) {
-		return NULL;
-	}	
-
-	while (start < (size_t *)sbrk(0)) {
-		if ((ptr >= start) && (ptr <= nextBlock(start))) {
-			return start;
-		}
-		start = nextBlock(start);
-	}
+size_t * is_pointer(size_t *ptr) {
+    if (ptr == (size_t *)0x0){
 	return NULL;
+    }
+
+    size_t *start = heap_mem.start - 2;
+
+    if ((ptr < heap_mem.start) || (ptr > heap_mem.end)) {
+	return NULL;
+    }	
+
+    while (start < (size_t *)sbrk(0)) {
+	if ((ptr >= start) && (ptr <= nextBlock(start))) {
+	    return start;
+	}
+	start = nextBlock(start);
+    }
+    return NULL;
 }
 
 void markBlock(size_t *ptr) {
-	if ((ptr < heap_mem.start) || (ptr > heap_mem.end)) {
-		return;
-	}
-
-	size_t *b;
-	if ((b = is_pointer(ptr)) == NULL) {
-		return;
-	}
-
-	if (markBitSet(b) == 1){
-		return;
-	}
-
-	setMarkBit(b);
-	size_t length = (block_size(b) / (sizeof(size_t)));
-	int i;
-
-	for (i = 1; i < length; i++) {
-		markBlock((size_t *)b[i]);
-	}
+    if ((ptr < heap_mem.start) || (ptr > heap_mem.end)) {
 	return;
+    }
+
+    size_t *b;
+    if ((b = is_pointer(ptr)) == NULL) {
+	return;
+    }
+
+    if (markBitSet(b) == 1) {
+	return;
+    }
+
+    setMarkBit(b);
+    size_t length = (block_size(b) / (sizeof(size_t)));
+    int i;
+
+    for (i = 1; i < length; i++) {
+	markBlock((size_t *)b[i]);
+    }
+    return;
 }
 
 void walk_region_and_mark(void* start, void* end) {
-	size_t *ptr = start;
-	while (ptr < (size_t *)end) {
-		markBlock((size_t *)(*ptr));
-		ptr++;
-	}
+    size_t *ptr = start;
+    while (ptr < (size_t *)end) {
+	markBlock((size_t *)(*ptr));
+	ptr++;
+    }
 }
 
 void sweep() {
-	size_t *start = heap_mem.start - 2;
-	size_t *end = sbrk(0);
-	size_t *ptr = start;
-	size_t *temp;
+    size_t *start = heap_mem.start - 2;
+    size_t *end = sbrk(0);
+    size_t *ptr = start;
+    size_t *temp;
 
-	while (ptr < end) {
-		if (markBitSet(ptr)) {
-			resetMarkBit(ptr);
-		}
-		else if (blockAllocated(ptr)) {
-			temp = (size_t *)(ptr + 2);
-			if (nextBlock(nextBlock(ptr)) >= end) {
-				free(temp);
-				heap_mem.end = sbrk(0);
-				return;
-			}
-			else {
-				free(temp);
-				heap_mem.end = sbrk(0);
-			}
-		}
-		heap_mem.end = sbrk(0);
-		ptr = nextBlock(ptr);
+    while (ptr < end) {
+	if (markBitSet(ptr)) {
+	    resetMarkBit(ptr);
 	}
+	else if (blockAllocated(ptr)) {
+	    temp = (size_t *)(ptr + 2);
+	    if (nextBlock(nextBlock(ptr)) >= end) {
+		free(temp);
+		heap_mem.end = sbrk(0);
+		return;
+	    }
+	    else {
+		free(temp);
+		heap_mem.end = sbrk(0);
+	    }
+	}
+	heap_mem.end = sbrk(0);
+	ptr = nextBlock(ptr);
+    }
 }
 
 // standard initialization 
