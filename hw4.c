@@ -136,11 +136,11 @@ size_t * is_pointer(size_t * ptr) {
 }
 
 void walk_region_and_mark(void* start, void* end) {
-	/*size_t *ptr = start;
+	size_t *ptr = start;
 
 	if ((is_pointer(ptr) != NULL) && (ptr <= end) && (is_marked(ptr) != 1)) {
 		mark(ptr);
-	}
+	
 
 	size_t *b;
 	size_t *header = b + 1;
@@ -155,9 +155,9 @@ void walk_region_and_mark(void* start, void* end) {
 		if ((is_pointer(ptr) != NULL) && (ptr <= end) && (is_marked(ptr) != 1)) {
 			mark(ptr);
 		}
-	}
+	}}
 
-	return;*/
+	return;
 }
 
 // standard initialization 
