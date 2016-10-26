@@ -101,16 +101,63 @@ void build_heap_index() {
 
 // the actual collection code
 void sweep() {
-  // TODO
+	/*size_t *start = heap_mem.start - 2;
+	size_t *end = sbrk(0);
+	size_t *ptr = start;
+	size_t *temp;
+
+	while (ptr < end) {
+		if (is_marked(ptr)) {
+			clear_mark(ptr);
+		}
+		else if (in_use(ptr)) {
+			temp = (size_t *) ptr + 2;
+			if (next_chunk(next_chunk(ptr)) >= end) {
+				free(temp);
+				heap_mem.end = sbrk(0);
+				return;
+			}
+			else {
+				free(temp);
+				heap_mem.end = sbrk(0);
+			}
+		}
+		heap_mem.end = sbrk(0);
+		ptr = next_chunk(ptr);
+	}*/
 }
 
 //determine if what "looks" like a pointer actually points to a block in the heap
 size_t * is_pointer(size_t * ptr) {
-  // TODO
+	if ((ptr < heap_mem.start) || (ptr > heap_mem.end)) {
+		return NULL;
+	}
+	return ptr;
 }
 
 void walk_region_and_mark(void* start, void* end) {
-  // TODO
+	/*size_t *ptr = start;
+
+	if ((is_pointer(ptr) != NULL) && (ptr <= end) && (is_marked(ptr) != 1)) {
+		mark(ptr);
+	}
+
+	size_t *b;
+	size_t *header = b + 1;
+	size_t headerSize = *header;
+	size_t size = (headerSize & (~7));
+
+	size_t length = size / (sizeof(size_t));
+	int i;
+	
+	for (i = 1; i < length; i++) {
+		ptr = (size_t *) b[i];
+		if ((is_pointer(ptr) != NULL) && (ptr <= end) && (is_marked(ptr) != 1)) {
+			mark(ptr);
+		}
+	}
+
+	return;*/
 }
 
 // standard initialization 
