@@ -195,7 +195,7 @@ void walk_region_and_mark(void* start, void* end) {
 }
 
 void sweep() {
-    size_t *start = heap_mem.start - 2;
+    size_t *start = heap_mem.start - 1;
     size_t *end = sbrk(0);
     size_t *ptr = start;
     size_t *temp;
