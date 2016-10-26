@@ -127,18 +127,18 @@ int blockAllocated(size_t *b) {
 int markBitSet(size_t *b) {
     size_t *header = b + 1;
     size_t mark = *header;
-    size_t marked = mark & 4;
+    size_t marked = mark & 2;
     return (marked && 1);
 }
 
 void setMarkBit(size_t *b) {
     size_t *ptr = b + 1;
-    *(ptr) = *(ptr) | 4;
+    *(ptr) = *(ptr) | 2;
 }
 
 void resetMarkBit(size_t *b) {
     size_t *ptr = b + 1;
-    *(ptr) = *(ptr) & (~4);
+    *(ptr) = *(ptr) & (~2);
 }
 
 //determine if what "looks" like a pointer actually points to a block in the heap
@@ -147,7 +147,7 @@ size_t * is_pointer(size_t *ptr) {
 	return NULL;
     }
 
-    size_t *start = heap_mem.start - 2;
+    size_t *start = heap_mem.start - 1;
 
     if ((ptr < heap_mem.start) || (ptr > heap_mem.end)) {
 	return NULL;
