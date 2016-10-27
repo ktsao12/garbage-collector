@@ -133,12 +133,12 @@ int markBitSet(size_t *b) {
 
 void setMarkBit(size_t *b) {
     size_t *ptr = b + 1;
-    *(ptr) = *(ptr) | 2;
+    *(ptr) = *(ptr) | 4;
 }
 
 void resetMarkBit(size_t *b) {
     size_t *ptr = b + 1;
-    *(ptr) = *(ptr) & (~2);
+    *(ptr) = *(ptr) & (~4);
 }
 
 //determine if what "looks" like a pointer actually points to a block in the heap
@@ -147,7 +147,7 @@ size_t * is_pointer(size_t *ptr) {
 	return NULL;
     }
 
-    size_t *start = heap_mem.start - 1;
+    size_t *start = heap_mem.start - 2;
 
     if ((ptr < heap_mem.start) || (ptr > heap_mem.end)) {
 	return NULL;
@@ -195,7 +195,7 @@ void walk_region_and_mark(void* start, void* end) {
 }
 
 void sweep() {
-    size_t *start = heap_mem.start - 1;
+    size_t *start = heap_mem.start - 2;
     size_t *end = sbrk(0);
     size_t *ptr = start;
     size_t *temp;
