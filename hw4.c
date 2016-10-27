@@ -127,7 +127,7 @@ int blockAllocated(size_t *b) {
 int markBitSet(size_t *b) {
     size_t *header = b + 1;
     size_t mark = *header;
-    size_t marked = mark & 2;
+    size_t marked = mark & 4;
     return (marked && 1);
 }
 
