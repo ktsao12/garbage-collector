@@ -1,4 +1,4 @@
-#include "hw4.h"
+#include "garbage_collector.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
